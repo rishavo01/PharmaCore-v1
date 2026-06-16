@@ -8,27 +8,88 @@ datasource db {
 }
 
 model Medicine {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   name        String
   category    String
   quantity    Int
   buyPrice    Float
   sellPrice   Float
   expiryDate  DateTime
-  createdAt   DateTime @default(now())
+  createdAt   DateTime   @default(now())
+  saleItems   SaleItem[]
+  supplierId  Int?
+  supplier    Supplier?  @relation(fields: [supplierId], references: [id])
 }
 
 model Supplier {
-  id        Int      @id @default(autoincrement())
-  name      String
-  phone     String
-  address   String?
-  createdAt DateTime @default(now())
+  id             Int             @id @default(autoincrement())
+  supplierCode   String          @unique
+  companyName    String
+  contactPerson  String?
+  phone          String
+  email          String?
+  address        String?
+  city           String?
+  state          String?
+  country        String?
+  postalCode     String?
+  taxNumber      String?
+  website        String?
+  status         String          @default("ACTIVE")
+  notes          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  medicines      Medicine[]
+  purchaseOrders PurchaseOrder[]
 }
 
+model Customer {
+  id        Int      @id @default(autoincrement())
+  name      String
+  phone     String   @unique
+  email     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sales     Sale[]
+}
 
 model Sale {
+  id             Int        @id @default(autoincrement())
+  invoiceNumber  String     @unique
+  customerId     Int
+  customer       Customer   @relation(fields: [customerId], references: [id])
+  customerName   String
+  paymentMethod  String     // Cash, Card, Online, Bank, UPI
+  status         String     // Completed, Pending, Cancelled
+  subtotal       Float
+  discount       Float
+  tax            Float
+  totalAmount    Float
+  clinicalNotes  String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  items          SaleItem[]
+}
+
+model SaleItem {
   id         Int      @id @default(autoincrement())
-  total      Float
-  createdAt  DateTime @default(now())
+  sale       Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  saleId     Int
+  medicine   Medicine @relation(fields: [medicineId], references: [id])
+  medicineId Int
+  quantity   Int
+  unitPrice  Float
+  totalPrice Float
+}
+
+model PurchaseOrder {
+  id           Int      @id @default(autoincrement())
+  orderNumber  String   @unique
+  supplierId   Int
+  supplier     Supplier @relation(fields: [supplierId], references: [id])
+  status       String   // PENDING, COMPLETED, CANCELLED
+  totalAmount  Float
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

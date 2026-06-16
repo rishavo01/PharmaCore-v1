@@ -1,18 +1,17 @@
 const express = require("express");
 const router = express.Router();
-
 const {
-  getStats,
-  getRevenue,
-  getStockMetrics,
-  getRecentTransactions,
-  getPriorityAlerts,
+  getSummary,
+  getRevenueAnalytics,
+  getRecentActivity,
+  getAlerts,
+  exportDashboardData,
 } = require("../controllers/dashboardController");
 
-router.get("/stats", getStats);
-router.get("/revenue", getRevenue);
-router.get("/stock-metrics", getStockMetrics);
-router.get("/recent-transactions", getRecentTransactions);
-router.get("/priority-alerts", getPriorityAlerts);
+router.get("/summary", getSummary);
+router.get("/revenue", getRevenueAnalytics);
+router.get("/recent-activity", getRecentActivity);
+router.get("/alerts", getAlerts);
+router.get("/export", exportDashboardData);
 
 module.exports = router;
